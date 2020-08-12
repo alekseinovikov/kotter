@@ -1,3 +1,9 @@
+buildscript {
+    dependencies {
+        classpath("com.google.protobuf:protobuf-gradle-plugin:${project.extra["protobuf_gradle_version"]}")
+    }
+}
+
 plugins {
     kotlin("jvm") version "1.3.72"
 }
