@@ -9,12 +9,10 @@ import java.io.OutputStream
 
 internal class FileEngineNodeImpl(private val file: File) : FileEngineNode, AutoCloseable {
 
-    private val inputStream: InputStream
     private val outputStream: OutputStream
 
     init {
         checkFile()
-        inputStream = file.inputStream()
         outputStream = file.outputStream()
     }
 
@@ -28,9 +26,13 @@ internal class FileEngineNodeImpl(private val file: File) : FileEngineNode, Auto
     override fun readData(): List<FileRecordProto> = synchronized(file) {
         val result = ArrayList<FileRecordProto>()
 
-        while (inputStream.available() > 0) {
-            val parsed = FileRecordProto.parseDelimitedFrom(inputStream)
-            result.add(parsed)
+        synchronized(file) {
+            file.inputStream().use { inputStream ->
+                while (inputStream.available() > 0) {
+                    val parsed = FileRecordProto.parseDelimitedFrom(inputStream)
+                    result.add(parsed)
+                }
+            }
         }
 
         return result
@@ -44,7 +46,6 @@ internal class FileEngineNodeImpl(private val file: File) : FileEngineNode, Auto
 
     override fun close() {
         try {
-            inputStream.close()
             outputStream.close()
         } catch (ex: Exception) {
             log.error("Exception on close file!", ex)
