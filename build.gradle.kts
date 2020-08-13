@@ -26,8 +26,10 @@ subprojects {
 
     dependencies {
         implementation(kotlin("stdlib"))
+        implementation("org.slf4j:log4j-over-slf4j:${project.extra["slf4j_version"]}")
 
         testImplementation(kotlin("test-junit5"))
+        testImplementation("org.junit.jupiter:junit-jupiter:${project.extra["junit_jupiter_version"]}")
     }
 
     tasks.withType<Test> {
