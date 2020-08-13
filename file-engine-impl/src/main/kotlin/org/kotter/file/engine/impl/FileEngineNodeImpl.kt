@@ -4,7 +4,6 @@ import org.kotter.core.FileAccessException
 import org.kotter.core.log
 import org.kotter.file.engine.proto.FileRecordProto
 import java.io.File
-import java.io.InputStream
 import java.io.OutputStream
 
 internal class FileEngineNodeImpl(private val file: File) : FileEngineNode, AutoCloseable {
@@ -23,19 +22,16 @@ internal class FileEngineNodeImpl(private val file: File) : FileEngineNode, Auto
         }
     }
 
-    override fun readData(): List<FileRecordProto> = synchronized(file) {
-        val result = ArrayList<FileRecordProto>()
-
-        synchronized(file) {
+    override fun readData(): Sequence<FileRecordProto> = synchronized(file) {
+        sequence<FileRecordProto> {
             file.inputStream().use { inputStream ->
                 while (inputStream.available() > 0) {
                     val parsed = FileRecordProto.parseDelimitedFrom(inputStream)
-                    result.add(parsed)
+
+                    yield(parsed)
                 }
             }
         }
-
-        return result
     }
 
     override fun flush() {

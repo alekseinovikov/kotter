@@ -4,6 +4,6 @@ import org.kotter.file.engine.proto.FileRecordProto
 
 interface FileEngineNode {
     fun addData(record: FileRecordProto)
-    fun readData(): List<FileRecordProto>
+    fun readData(): Sequence<FileRecordProto>
     fun flush()
 }

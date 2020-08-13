@@ -42,7 +42,7 @@ internal class FileEngineNodeImplTest {
         //act
         node.addData(record)
         node.flush()
-        val records = node.readData()
+        val records = node.readData().toList()
 
         //assert
         assertThat(records).hasSize(1)
@@ -68,7 +68,7 @@ internal class FileEngineNodeImplTest {
         //act
         node.addData(record1)
         node.flush()
-        val records = node.readData()
+        val records = node.readData().toList()
 
         assertThat(records).hasSize(1)
         val result = records[0]
@@ -79,7 +79,7 @@ internal class FileEngineNodeImplTest {
         node.addData(record2)
         node.flush()
 
-        val records2 = node.readData()
+        val records2 = node.readData().toList()
 
         assertThat(records2).hasSize(2)
         val result2 = records2[0]
@@ -99,7 +99,7 @@ internal class FileEngineNodeImplTest {
 
         val readData = node.readData()
 
-        assertThat(readData).hasSize(100_000)
+        assertThat(readData.count()).isEqualTo(100_000)
     }
 
     @Test
@@ -124,7 +124,7 @@ internal class FileEngineNodeImplTest {
 
         val data = node.readData()
 
-        assertThat(data).hasSize(300_000)
+        assertThat(data.count()).isEqualTo(300_000)
 
         Unit
     }
