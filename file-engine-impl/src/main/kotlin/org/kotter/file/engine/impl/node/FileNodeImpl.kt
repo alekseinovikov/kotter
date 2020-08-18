@@ -1,4 +1,4 @@
-package org.kotter.file.engine.impl
+package org.kotter.file.engine.impl.node
 
 import org.kotter.core.FileAccessException
 import org.kotter.core.log
@@ -6,7 +6,10 @@ import org.kotter.file.engine.proto.FileRecordProto
 import java.io.File
 import java.io.OutputStream
 
-internal class FileEngineNodeImpl(private val file: File) : FileEngineNode, AutoCloseable {
+internal class FileNodeImpl(
+    private val file: File,
+    private val partitionNumber: Int
+) : FileNode, AutoCloseable {
 
     private val outputStream: OutputStream
 
@@ -48,6 +51,8 @@ internal class FileEngineNodeImpl(private val file: File) : FileEngineNode, Auto
             //ignore
         }
     }
+
+    override fun partitionNumber(): Int = this.partitionNumber
 
     private fun checkFile() {
         if (file.exists().not()) file.createNewFile()

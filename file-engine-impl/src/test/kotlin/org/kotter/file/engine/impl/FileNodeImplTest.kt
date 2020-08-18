@@ -6,14 +6,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.kotter.file.engine.impl.node.FileNodeImpl
 import org.kotter.file.engine.proto.FileRecordProto
 import java.io.File
 import java.util.*
 import kotlin.random.Random
 
-internal class FileEngineNodeImplTest {
+internal class FileNodeImplTest {
 
-    lateinit var node: FileEngineNodeImpl
+    lateinit var node: FileNodeImpl
     lateinit var file: File
 
     @BeforeEach
@@ -22,7 +23,7 @@ internal class FileEngineNodeImplTest {
         val filePath = "$tempDirPath/$fileName"
 
         file = File(filePath)
-        node = FileEngineNodeImpl(file)
+        node = FileNodeImpl(file, 1)
     }
 
     @AfterEach
