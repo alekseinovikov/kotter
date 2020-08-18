@@ -6,8 +6,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.kotter.core.Record
 import org.kotter.file.engine.impl.node.FileNodeImpl
-import org.kotter.file.engine.proto.FileRecordProto
+import org.kotter.file.engine.impl.serialization.Serializer
+import org.kotter.file.engine.impl.serialization.impl.SerializerV1
 import java.io.File
 import java.util.*
 import kotlin.random.Random
@@ -21,9 +23,10 @@ internal class FileNodeImplTest {
     fun setUp() {
         val fileName = UUID.randomUUID().toString()
         val filePath = "$tempDirPath/$fileName"
+        val serializer: Serializer = SerializerV1()
 
         file = File(filePath)
-        node = FileNodeImpl(file, 1)
+        node = FileNodeImpl(file, 1, serializer)
     }
 
     @AfterEach
@@ -35,10 +38,7 @@ internal class FileNodeImplTest {
     @Test
     fun testWritingAndReadingCase1() {
         //arrange
-        val record = FileRecordProto.newBuilder()
-            .setKey("1")
-            .setValue(1)
-            .build()
+        val record = Record("1", 1)
 
         //act
         node.addData(record)
@@ -56,15 +56,8 @@ internal class FileNodeImplTest {
     @Test
     fun testWritingAndReadingCase2() {
         //arrange
-        val record1 = FileRecordProto.newBuilder()
-            .setKey("1")
-            .setValue(1)
-            .build()
-
-        val record2 = FileRecordProto.newBuilder()
-            .setKey("2")
-            .setValue(2)
-            .build()
+        val record1 = Record("1", 1)
+        val record2 = Record("2", 2)
 
         //act
         node.addData(record1)
@@ -132,12 +125,7 @@ internal class FileNodeImplTest {
 
     private fun generateRandomRecords(random: Random.Default, count: Int) {
         repeat(count) {
-            val record = FileRecordProto.newBuilder()
-                .setKey(UUID.randomUUID().toString())
-                .setValue(random.nextLong())
-                .build()
-
-            node.addData(record)
+            Record(UUID.randomUUID().toString(), random.nextLong()).also { node.addData(it) }
         }
 
         node.flush()

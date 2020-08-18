@@ -34,6 +34,7 @@ subprojects {
         testImplementation(kotlin("test-junit5"))
         testImplementation("org.junit.jupiter:junit-jupiter:${project.extra["junit_jupiter_version"]}")
         testImplementation("org.assertj:assertj-core:${project.extra["assertj_version"]}")
+        testImplementation("org.mockito:mockito-all:${project.extra["mockito_version"]}")
     }
 
     tasks.withType<Test> {

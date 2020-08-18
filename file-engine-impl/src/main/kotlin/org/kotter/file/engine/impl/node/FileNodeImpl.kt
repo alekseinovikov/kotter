@@ -1,14 +1,16 @@
 package org.kotter.file.engine.impl.node
 
 import org.kotter.core.FileAccessException
+import org.kotter.core.Record
 import org.kotter.core.log
-import org.kotter.file.engine.proto.FileRecordProto
+import org.kotter.file.engine.impl.serialization.Serializer
 import java.io.File
 import java.io.OutputStream
 
 internal class FileNodeImpl(
     private val file: File,
-    private val partitionNumber: Int
+    private val partitionNumber: Int,
+    private val serializer: Serializer
 ) : FileNode, AutoCloseable {
 
     private val outputStream: OutputStream
@@ -19,18 +21,17 @@ internal class FileNodeImpl(
     }
 
 
-    override fun addData(record: FileRecordProto) {
+    override fun addData(record: Record) {
         synchronized(file) {
-            record.writeDelimitedTo(outputStream)
+            serializer.serializeAndWriteToOutputStream(record, outputStream)
         }
     }
 
-    override fun readData(): Sequence<FileRecordProto> = synchronized(file) {
-        sequence<FileRecordProto> {
+    override fun readData(): Sequence<Record> = synchronized(file) {
+        sequence {
             file.inputStream().use { inputStream ->
                 while (inputStream.available() > 0) {
-                    val parsed = FileRecordProto.parseDelimitedFrom(inputStream)
-
+                    val parsed = serializer.readFromInputStreamAndDeserialize(inputStream)
                     yield(parsed)
                 }
             }
