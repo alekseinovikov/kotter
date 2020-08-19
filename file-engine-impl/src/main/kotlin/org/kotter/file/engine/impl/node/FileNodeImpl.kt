@@ -8,8 +8,8 @@ import java.io.File
 import java.io.OutputStream
 
 internal class FileNodeImpl(
-    private val file: File,
-    private val partitionNumber: Int,
+    override val file: File,
+    override val partitionNumber: Int,
     private val serializer: Serializer
 ) : FileNode, AutoCloseable {
 
@@ -58,6 +58,24 @@ internal class FileNodeImpl(
     private fun checkFile() {
         if (file.exists().not()) file.createNewFile()
         if (file.canWrite().not()) throw FileAccessException(file)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as FileNodeImpl
+
+        if (file.name != other.file.name) return false
+        if (partitionNumber != other.partitionNumber) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = file.hashCode()
+        result = 31 * result + partitionNumber
+        return result
     }
 
 }
