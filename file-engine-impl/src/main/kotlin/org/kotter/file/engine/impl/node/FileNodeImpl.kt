@@ -5,6 +5,8 @@ import org.kotter.core.Record
 import org.kotter.core.log
 import org.kotter.file.engine.impl.serialization.Serializer
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.OutputStream
 
 internal class FileNodeImpl(
@@ -17,7 +19,7 @@ internal class FileNodeImpl(
 
     init {
         checkFile()
-        outputStream = file.outputStream()
+        outputStream = FileOutputStream(file, true)
     }
 
 
@@ -29,7 +31,7 @@ internal class FileNodeImpl(
 
     override fun readData(): Sequence<Record> = synchronized(file) {
         sequence {
-            file.inputStream().use { inputStream ->
+            FileInputStream(file).use { inputStream ->
                 while (inputStream.available() > 0) {
                     val parsed = serializer.readFromInputStreamAndDeserialize(inputStream)
                     yield(parsed)
